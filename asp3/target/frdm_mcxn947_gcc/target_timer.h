@@ -60,7 +60,7 @@
 /*
  * タイマ割込みハンドラ登録のための定数
  */
-#define INTNO_TIMER  ( + 16) /* 割込み番号 */
+#define INTNO_TIMER  (31 + 16) /* 割込み番号 */
 #define INHNO_TIMER  INTNO_TIMER                  /* 割込みハンドラ番号 */
 #define INTPRI_TIMER (TMAX_INTPRI - 1)            /* 割込み優先度 */
 #define INTATR_TIMER TA_NULL                      /* 割込み属性 */
@@ -82,6 +82,7 @@ extern void	target_hrt_terminate(intptr_t exinf);
  */
 Inline HRTCNT target_hrt_get_current(void)
 {
+    return sil_rew_mem((uint32_t *)(MCXNx4x_CTIMER0_BASE + CTIMER_TC));
 }
 
 /*
@@ -101,6 +102,24 @@ Inline void target_hrt_raise_event(void)
  */
 Inline void target_hrt_set_event(HRTCNT hrtcnt)
 {
+    /*
+     * 現在のカウント値を読み，hrtcnt後に割込みが発生するように設定する．
+     */
+    const uint32_t current = target_hrt_get_current();
+    sil_wrw_mem((uint32_t *)(MCXNx4x_CTIMER0_BASE + CTIMER_MR0), current + hrtcnt);
+    
+    /* Match Control (MCR) */
+    /*  bit0 MR0I Interrupt on MR0 */
+    /*    1b - Generates           */
+    sil_wrw_mem((uint32_t *)(MCXNx4x_CTIMER0_BASE + CTIMER_MCR), 0x01); 
+
+    /*
+     * 上で現在のカウント値を読んで以降に，hrtcnt以上カウントアップしてい
+     * た場合には，割込みを発生させる．
+     */
+    if (target_hrt_get_current() - current >= hrtcnt) {
+        target_hrt_raise_event();
+    }
 }
 
 /*

@@ -52,6 +52,13 @@
  */
 void target_hrt_initialize(intptr_t exinf)
 {
+    sil_wrw_mem(MCXNx4x_SYSCON_CTIMER0CLKDIV, 0x03 << 29);
+    sil_wrw_mem(MCXNx4x_SYSCON_CTIMER0CLKDIV, 0x00);
+    sil_wrw_mem(MCXNx4x_SYSCON_CTIMERCLKSEL0, 0x04);       // FRO 12MHz clock
+    sil_wrw_mem(MCXNx4x_SYSCON_AHBCLKCTRLSET1, (1 << 26)); // bit26 TIMER0 - Enables the clock for CTIMER0
+    
+    sil_wrw_mem((uint32_t *)(MCXNx4x_CTIMER0_BASE + CTIMER_PR), 12 - 1);/* 12MHz / 12 = 1MHz */
+    sil_wrw_mem((uint32_t *)(MCXNx4x_CTIMER0_BASE + CTIMER_TCR), 0x01); /* bit0 - Counter Enable */
 }
 
 /*
@@ -59,6 +66,11 @@ void target_hrt_initialize(intptr_t exinf)
  */
 void target_hrt_terminate(intptr_t exinf)
 {
+
+    /* bit1 - Counter Reset Enable */
+    /* bit0 - Counter Enable       */
+    /*         0 - Disable         */
+    sil_wrw_mem((uint32_t *)(MCXNx4x_CTIMER0_BASE + CTIMER_TCR), (0x01 << 1) | (0x00 << 0)); 
 }
 
 /*
@@ -66,4 +78,10 @@ void target_hrt_terminate(intptr_t exinf)
  */
 void target_hrt_handler(void)
 {
+    /* Clear Interrupt Flag (MR0INT)*/
+    sil_wrw_mem((uint32_t *)(MCXNx4x_CTIMER0_BASE + CTIMER_IR), (0x01));
+    /* Disable interrupt */
+    sil_wrw_mem((uint32_t *)(MCXNx4x_CTIMER0_BASE + CTIMER_MCR), 0x00);
+    
+    signal_time();
 }

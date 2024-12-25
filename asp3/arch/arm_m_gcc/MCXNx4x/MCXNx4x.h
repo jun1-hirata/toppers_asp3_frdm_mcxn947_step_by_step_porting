@@ -252,5 +252,35 @@
 #define MCXNx4x_LP_FLEXCOMM8_IRQ  (43)
 #define MCXNx4x_LP_FLEXCOMM9_IRQ  (44)
 
+/* CTIMER */
+#define MCXNx4x_CTIMER0_BASE      (0x4000C000)
+#define MCXNx4x_CTIMER1_BASE      (0x4000D000)
+#define MCXNx4x_CTIMER2_BASE      (0x4000E000)
+#define MCXNx4x_CTIMER3_BASE      (0x4000F000)
+#define MCXNx4x_CTIMER4_BASE      (0x40010000)
+
+#define CTIMER_IR                 (0x00)
+#define CTIMER_TCR                (0x04)
+#define CTIMER_TC                 (0x08)
+#define CTIMER_PR                 (0x0C)
+#define CTIMER_PC                 (0x10)
+#define CTIMER_MCR                (0x14)
+#define CTIMER_MR0                (0x18)
+#define CTIMER_MR1                (0x1C)
+#define CTIMER_MR2                (0x20)
+#define CTIMER_MR3                (0x24)
+#define CTIMER_CCR                (0x28)
+#define CTIMER_CR0                (0x2C)
+#define CTIMER_CR1                (0x30)
+#define CTIMER_CR2                (0x34)
+#define CTIMER_CR3                (0x38)
+#define CTIMER_EMR                (0x3C)
+#define CTIMER_CTCR               (0x70)
+#define CTIMER_PWMC               (0x74)
+#define CTIMER_MSR0               (0x78)
+#define CTIMER_MSR1               (0x7C)
+#define CTIMER_MSR2               (0x80)
+#define CTIMER_MSR3               (0x84)
+
 
 #endif /* #ifndef TOPPERS_MCX_Nx4x_H */
